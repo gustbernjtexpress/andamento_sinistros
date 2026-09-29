@@ -34,12 +34,16 @@ button.pri{background:var(--red);border-color:var(--red);color:#fff}
 .bar{display:flex;gap:8px;margin-bottom:10px}
 .bar input{flex:1;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:6px;padding:7px 10px}
 .tw{overflow-x:auto;background:var(--card);border:1px solid var(--line);border-radius:10px}
-table{width:100%;border-collapse:collapse;min-width:900px}
+table{width:100%;border-collapse:collapse;min-width:900px;table-layout:fixed}
+tbody tr:not(.open) td.t,tbody tr:not(.open) td.s,tbody tr:not(.open) .ob,.sit span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+tbody tr:not(.open) .ex{display:none}
+.sit{min-width:0}.sit span{min-width:0}tr.open .sit{white-space:normal}tr.open .sit span{white-space:normal}
+.act button[data-x]{color:var(--red);border-color:var(--red)}
 th{position:sticky;top:0;background:var(--head);color:#fff;text-align:left;padding:10px 12px;font-size:12px;letter-spacing:.05em;text-transform:uppercase}
 td{padding:10px 12px;border-top:1px solid var(--line);vertical-align:top}
 tbody tr:nth-child(even) td{background:rgba(127,127,127,.06)}
 tbody tr:hover td{background:rgba(215,25,32,.07)}
-th:nth-child(1){width:110px}th:nth-child(2){width:210px}th:nth-child(3){width:170px}th:nth-child(4){width:auto}th:nth-child(5){width:120px}th:nth-child(6){width:120px}
+th:nth-child(1){width:110px}th:nth-child(2){width:210px}th:nth-child(3){width:170px}th:nth-child(4){width:auto}th:nth-child(5){width:120px}th:nth-child(6){width:235px}
 @media (min-width:1100px){body{font-size:15px}td,th{padding:12px 16px}.tw{overflow:visible}table{min-width:0}}
 td.v{font-weight:700}
 td.t{color:var(--mut);font-size:12px;text-transform:uppercase}
@@ -64,7 +68,8 @@ header{padding:8px 12px}.logo{font-size:24px}h1{font-size:18px}.sub input{border
 .sum{gap:6px;margin:8px 0}.box{padding:6px 8px}.box b{font-size:20px}.total b{font-size:24px}
 table{min-width:0}th,td{padding:5px 8px}thead{display:table-header-group}tr{break-inside:avoid}
 th:nth-child(6),td:nth-child(6){display:none}
-.tw{overflow:visible}th{position:static}tbody tr:hover td{background:none}}
+.tw{overflow:visible}th{position:static}tbody tr:hover td{background:none}
+.ob,.sit span,td.t,td.s{white-space:normal!important;overflow:visible!important;text-overflow:clip!important}.ex{display:block!important}.act button{display:none}}
 </style>
 </head>
 <body>
@@ -83,7 +88,7 @@ th:nth-child(6),td:nth-child(6){display:none}
 
 <div class="sum" id="sum"></div>
 
-<div class="bar"><input id="q" placeholder="Buscar placa, tipo ou observação…"></div>
+<div class="bar"><input id="q" placeholder="Buscar placa, tipo ou observação…"><button id="all">Expandir tudo</button></div>
 <div class="tw"><table>
   <thead><tr><th>Veículo</th><th>Tipo</th><th>Situação</th><th>Tratativa / Observações</th><th>Previsão</th><th class="act"></th></tr></thead>
   <tbody id="tb"></tbody>
@@ -126,7 +131,7 @@ const SEED=[
 const KEY="sinistros-v1";
 let S={date:new Date().toISOString().slice(0,10),items:SEED.map((x,i)=>({...x,id:i+1}))};
 try{const r=localStorage.getItem(KEY);if(r)S=JSON.parse(r)}catch(e){}
-let filter=null,editId=null;
+let filter=null,editId=null;const exp=new Set();
 const $=id=>document.getElementById(id);
 const esc=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const fmt=d=>d.split("-").reverse().join("/");
@@ -142,7 +147,7 @@ $("f_c").innerHTML=CATS.map(c=>`<option value="${c.id}">${c.n}</option>`).join("
 $("dt").value=S.date;
 $("dt").onchange=e=>{S.date=e.target.value;save()};
 
-function render(){
+function render(){setTimeout(labelAll,0);
   const n=S.items.length;
   $("sum").innerHTML=`<div class="box total" style="cursor:default;border-top-color:var(--red)"><div><span>TOTAL DE SINISTROS</span><br><b>${String(n).padStart(2,"0")}</b><br><span>EM ACOMPANHAMENTO</span></div></div>`+
    CATS.map(c=>{const k=S.items.filter(i=>i.c===c.id).length;
@@ -150,15 +155,17 @@ function render(){
   document.querySelectorAll(".box[data-c]").forEach(b=>b.onclick=()=>{filter=filter===b.dataset.c?null:b.dataset.c;render()});
   const q=$("q").value.toLowerCase();
   const rows=S.items.filter(i=>(!filter||i.c===filter)&&(!q||[i.v,i.t,i.s,i.o,i.e].join(" ").toLowerCase().includes(q)));
-  $("tb").innerHTML=rows.length?rows.map(i=>`<tr>
-    <td class="v">${esc(i.v)}</td><td class="t">${esc(i.t)}</td>
-    <td><div class="sit"><i class="dot" style="background:${cat(i.c).c}"></i>${esc(i.s)}</div></td>
-    <td>${esc(i.o)}${i.e?`<div class="ex">${esc(i.e)}</div>`:""}</td>
+  $("tb").innerHTML=rows.length?rows.map(i=>`<tr class="${exp.has(i.id)?"open":""}">
+    <td class="v">${esc(i.v)}</td><td class="t" title="${esc(i.t)}">${esc(i.t)}</td>
+    <td class="s"><div class="sit"><i class="dot" style="background:${cat(i.c).c}"></i><span title="${esc(i.s)}">${esc(i.s)}</span></div></td>
+    <td><div class="ob">${esc(i.o)}</div>${i.e?`<div class="ex">${esc(i.e)}</div>`:""}</td>
     <td>${prev(i.p)}</td>
-    <td class="act"><button data-e="${i.id}">Editar</button> <button data-d="${i.id}">✕</button></td></tr>`).join(""):`<tr><td colspan="6" class="empty">Nenhum sinistro encontrado.</td></tr>`;
+    <td class="act"><button data-x="${i.id}">${exp.has(i.id)?"Ver menos":"Ver mais"}</button> <button data-e="${i.id}">Editar</button> <button data-d="${i.id}">✕</button></td></tr>`).join(""):`<tr><td colspan="6" class="empty">Nenhum sinistro encontrado.</td></tr>`;
+  document.querySelectorAll("[data-x]").forEach(b=>b.onclick=()=>{const k=+b.dataset.x;exp.has(k)?exp.delete(k):exp.add(k);render()});
   document.querySelectorAll("[data-e]").forEach(b=>b.onclick=()=>open(+b.dataset.e));
   document.querySelectorAll("[data-d]").forEach(b=>b.onclick=()=>{if(confirm("Excluir este sinistro?")){S.items=S.items.filter(i=>i.id!==+b.dataset.d);save();render()}});
 }
+function labelAll(){$("all").textContent=exp.size>=S.items.length?"Recolher tudo":"Expandir tudo"}
 function open(id){
   editId=id;const i=S.items.find(x=>x.id===id)||{v:"",t:"",c:"terc",s:"",o:"",e:""};
   $("f_v").value=i.v;$("f_t").value=i.t;$("f_c").value=i.c;$("f_s").value=i.s;$("f_o").value=i.o;$("f_e").value=i.e;$("f_p").value=i.p||"";
@@ -174,11 +181,12 @@ $("ok").onclick=()=>{
   save();$("dlg").close();render();
 };
 $("q").oninput=render;
+$("all").onclick=()=>{const ids=S.items.map(i=>i.id);if(exp.size<ids.length)ids.forEach(x=>exp.add(x));else exp.clear();render()};
 $("print").onclick=()=>{
   const t=document.title;document.title="Andamento de Sinistros - "+fmt(S.date).replace(/\//g,"-");
   window.onafterprint=()=>{document.title=t};window.print();
 };
-render();
+render();labelAll();
 </script>
 </body>
 </html>
