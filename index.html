@@ -99,6 +99,7 @@ th:nth-child(6),td:nth-child(6){display:none}
   <label>Veículo (placa)</label><input id="f_v">
   <label>Tipo</label><input id="f_t" placeholder="Ex.: COLISÃO COM TERCEIRO">
   <label>Categoria (resumo)</label><select id="f_c"></select>
+  <div id="f_cow" hidden><label>Qual categoria? (escreva)</label><input id="f_co" placeholder="Ex.: Aguardando peça"></div>
   <label>Situação (texto exibido)</label><input id="f_s" placeholder="Ex.: Em andamento">
   <label>Tratativa / Observações</label><textarea id="f_o" rows="4"></textarea>
   <label>Previsão (conclusão / retorno)</label><input type="date" id="f_p">
@@ -112,7 +113,8 @@ const CATS=[
  {id:"trat",n:"Em tratativa / acompanhamento / conclusão de reparo",c:"var(--g)"},
  {id:"jur",n:"Jurídico",c:"var(--b)"},
  {id:"orc",n:"Aguardando orçamento / avaliação",c:"var(--y)"},
- {id:"doc",n:"Aguardando documentação / B.O.",c:"var(--y)"}];
+ {id:"doc",n:"Aguardando documentação / B.O.",c:"var(--y)"},
+ {id:"out",n:"Outros",c:"var(--mut)"}];
 const SEED=[
 {v:"UDA0D66",t:"FIAT – COLISÃO COM TERCEIRO",c:"terc",s:"Em andamento",o:"Aguardando o veículo para avaliação das avarias e retorno do terceiro com as documentações necessárias para continuidade das tratativas.",e:""},
 {v:"QSW7F71",t:"HILUX – COLISÃO COM TERCEIRO",c:"doc",s:"Em andamento",o:"Boletim de Ocorrência realizado. Aguardando a identificação do motorista terceiro para lançamento na Porto, além das imagens das câmeras do posto e documentação do envolvido.",e:"Terceiro: Diego Silva da França | Chassi: 8AJKA3CD4R3134350 | Placa: SVN0D56"},
@@ -145,19 +147,21 @@ const cat=id=>CATS.find(c=>c.id===id)||CATS[0];
 function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
 $("f_c").innerHTML=CATS.map(c=>`<option value="${c.id}">${c.n}</option>`).join("");
 $("dt").value=S.date;
+const tgl=()=>{$("f_cow").hidden=$("f_c").value!=="out"};$("f_c").onchange=tgl;
+const sit=i=>i.c==="out"&&i.co?(i.s?i.s+" · "+i.co:i.co):i.s;
 $("dt").onchange=e=>{S.date=e.target.value;save()};
 
 function render(){setTimeout(labelAll,0);
   const n=S.items.length;
   $("sum").innerHTML=`<div class="box total" style="cursor:default;border-top-color:var(--red)"><div><span>TOTAL DE SINISTROS</span><br><b>${String(n).padStart(2,"0")}</b><br><span>EM ACOMPANHAMENTO</span></div></div>`+
-   CATS.map(c=>{const k=S.items.filter(i=>i.c===c.id).length;
+   CATS.map(c=>{const k=S.items.filter(i=>i.c===c.id).length;if(c.id==="out"&&!k)return"";
     return `<div class="box ${filter===c.id?"on":""}" data-c="${c.id}" style="border-top-color:${c.c}"><i class="dot" style="background:${c.c}"></i><div><b>${String(k).padStart(2,"0")}</b><br><span>${c.n}</span></div></div>`}).join("");
   document.querySelectorAll(".box[data-c]").forEach(b=>b.onclick=()=>{filter=filter===b.dataset.c?null:b.dataset.c;render()});
   const q=$("q").value.toLowerCase();
-  const rows=S.items.filter(i=>(!filter||i.c===filter)&&(!q||[i.v,i.t,i.s,i.o,i.e].join(" ").toLowerCase().includes(q)));
+  const rows=S.items.filter(i=>(!filter||i.c===filter)&&(!q||[i.v,i.t,i.s,i.co,i.o,i.e].join(" ").toLowerCase().includes(q)));
   $("tb").innerHTML=rows.length?rows.map(i=>`<tr class="${exp.has(i.id)?"open":""}">
     <td class="v">${esc(i.v)}</td><td class="t" title="${esc(i.t)}">${esc(i.t)}</td>
-    <td class="s"><div class="sit"><i class="dot" style="background:${cat(i.c).c}"></i><span title="${esc(i.s)}">${esc(i.s)}</span></div></td>
+    <td class="s"><div class="sit"><i class="dot" style="background:${cat(i.c).c}"></i><span title="${esc(sit(i))}">${esc(sit(i))}</span></div></td>
     <td><div class="ob">${esc(i.o)}</div>${i.e?`<div class="ex">${esc(i.e)}</div>`:""}</td>
     <td>${prev(i.p)}</td>
     <td class="act"><button data-x="${i.id}">${exp.has(i.id)?"Ver menos":"Ver mais"}</button> <button data-e="${i.id}">Editar</button> <button data-d="${i.id}">✕</button></td></tr>`).join(""):`<tr><td colspan="6" class="empty">Nenhum sinistro encontrado.</td></tr>`;
@@ -168,14 +172,15 @@ function render(){setTimeout(labelAll,0);
 function labelAll(){$("all").textContent=exp.size>=S.items.length?"Recolher tudo":"Expandir tudo"}
 function open(id){
   editId=id;const i=S.items.find(x=>x.id===id)||{v:"",t:"",c:"terc",s:"",o:"",e:""};
-  $("f_v").value=i.v;$("f_t").value=i.t;$("f_c").value=i.c;$("f_s").value=i.s;$("f_o").value=i.o;$("f_e").value=i.e;$("f_p").value=i.p||"";
+  $("f_v").value=i.v;$("f_t").value=i.t;$("f_c").value=i.c;$("f_co").value=i.co||"";tgl();$("f_s").value=i.s;$("f_o").value=i.o;$("f_e").value=i.e;$("f_p").value=i.p||"";
   $("dlg").showModal();
 }
 $("add").onclick=()=>open(null);
 $("cx").onclick=()=>$("dlg").close();
 $("ok").onclick=()=>{
-  const d={v:$("f_v").value.trim().toUpperCase(),t:$("f_t").value.trim(),c:$("f_c").value,s:$("f_s").value.trim(),o:$("f_o").value.trim(),e:$("f_e").value.trim(),p:$("f_p").value};
+  const d={v:$("f_v").value.trim().toUpperCase(),t:$("f_t").value.trim(),c:$("f_c").value,s:$("f_s").value.trim(),o:$("f_o").value.trim(),e:$("f_e").value.trim(),p:$("f_p").value,co:$("f_c").value==="out"?$("f_co").value.trim():""};
   if(!d.v){$("f_v").focus();return}
+  if(d.c==="out"&&!d.co){$("f_co").focus();return}
   if(editId){Object.assign(S.items.find(x=>x.id===editId),d)}
   else{S.items.push({...d,id:Math.max(0,...S.items.map(x=>x.id))+1});S.date=new Date().toISOString().slice(0,10);$("dt").value=S.date}
   save();$("dlg").close();render();
