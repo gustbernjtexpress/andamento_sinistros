@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Andamento de Sinistros</title>
+<style>
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
+--bg:#f4f6f9;--card:#fff;--ink:#1f2a37;--mut:#64748b;--line:#e2e8f0;--head:#2b3a4a;--red:#d71920;
+--y:#f5a623;--g:#2e9e4f;--b:#1f6feb}
+:root[data-theme="dark"]{--bg:#111827;--card:#1b2433;--ink:#e5e7eb;--mut:#94a3b8;--line:#2d3a4d;--head:#0b1220}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#111827;--card:#1b2433;--ink:#e5e7eb;--mut:#94a3b8;--line:#2d3a4d;--head:#0b1220}}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;font-size:14px}
+.wrap{max-width:1100px;margin:0 auto;padding:16px}
+header{display:flex;align-items:center;gap:14px;flex-wrap:wrap;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:14px 18px;border-bottom:3px solid var(--red)}
+.logo{font-weight:900;font-style:italic;color:var(--red);font-size:26px;letter-spacing:-1px}
+.logo small{font-size:15px}
+h1{margin:0;font-size:22px;line-height:1.1}
+.sub{color:var(--mut);display:flex;align-items:center;gap:6px;margin-top:2px}
+.sub input{border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:6px;padding:2px 6px}
+.tools{margin-left:auto;display:flex;gap:8px;flex-wrap:wrap}
+button,select,input,textarea{font:inherit}
+button{cursor:pointer;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:6px;padding:6px 12px}
+button.pri{background:var(--red);border-color:var(--red);color:#fff}
+.sum{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:14px 0}
+.box{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:12px 14px;cursor:pointer;display:flex;gap:10px;align-items:center}
+.box.on{outline:2px solid var(--red)}
+.box b{font-size:28px;line-height:1}
+.box span{color:var(--mut);font-size:12px;line-height:1.25}
+.dot{width:14px;height:14px;border-radius:50%;flex:none;display:inline-block}
+.total b{font-size:38px}
+.bar{display:flex;gap:8px;margin-bottom:10px}
+.bar input{flex:1;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:6px;padding:7px 10px}
+.tw{overflow-x:auto;background:var(--card);border:1px solid var(--line);border-radius:10px}
+table{width:100%;border-collapse:collapse;min-width:900px}
+th{background:var(--head);color:#fff;text-align:left;padding:10px 12px;font-size:12px;letter-spacing:.05em;text-transform:uppercase}
+td{padding:10px 12px;border-top:1px solid var(--line);vertical-align:top}
+td.v{font-weight:700}
+td.t{color:var(--mut);font-size:12px;text-transform:uppercase}
+.sit{display:flex;gap:8px;align-items:center;white-space:nowrap}
+.ex{margin-top:6px;padding-top:6px;border-top:1px dashed var(--line);color:var(--mut);font-size:12px;white-space:pre-line}
+.act{white-space:nowrap}
+.pv{white-space:nowrap;font-weight:600}.pv small{display:block;font-weight:400;color:var(--mut)}.pv.late,.pv.late small{color:var(--red)}
+.act button{padding:2px 8px;font-size:12px}
+dialog{border:1px solid var(--line);border-radius:12px;background:var(--card);color:var(--ink);width:min(520px,94vw);padding:18px}
+dialog::backdrop{background:rgba(0,0,0,.45)}
+label{display:block;margin:8px 0 3px;font-size:12px;color:var(--mut)}
+dialog input,dialog select,dialog textarea{width:100%;border:1px solid var(--line);background:var(--bg);color:var(--ink);border-radius:6px;padding:7px}
+.row{display:flex;gap:8px;justify-content:flex-end;margin-top:14px}
+.empty{padding:24px;text-align:center;color:var(--mut)}
+@media print{.tools,.bar,.act{display:none}body{background:#fff}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <div class="logo">J&amp;T <small>EXPRESS</small></div>
+  <div>
+    <h1>ANDAMENTO DE SINISTROS</h1>
+    <div class="sub">Atualizado em <input type="date" id="dt"></div>
+  </div>
+  <div class="tools">
+    <button class="pri" id="add">+ Novo sinistro</button>
+    <button id="print">Imprimir / PDF</button>
+  </div>
+</header>
+
+<div class="sum" id="sum"></div>
+
+<div class="bar"><input id="q" placeholder="Buscar placa, tipo ou observação…"></div>
+<div class="tw"><table>
+  <thead><tr><th>Veículo</th><th>Tipo</th><th>Situação</th><th>Tratativa / Observações</th><th>Previsão</th><th class="act"></th></tr></thead>
+  <tbody id="tb"></tbody>
+</table></div>
+</div>
+
+<dialog id="dlg"><div>
+  <label>Veículo (placa)</label><input id="f_v">
+  <label>Tipo</label><input id="f_t" placeholder="Ex.: COLISÃO COM TERCEIRO">
+  <label>Categoria (resumo)</label><select id="f_c"></select>
+  <label>Situação (texto exibido)</label><input id="f_s" placeholder="Ex.: Em andamento">
+  <label>Tratativa / Observações</label><textarea id="f_o" rows="4"></textarea>
+  <label>Previsão (conclusão / retorno)</label><input type="date" id="f_p">
+  <label>Detalhes extras (terceiro, chassi, empresa, rota…)</label><textarea id="f_e" rows="2"></textarea>
+  <div class="row"><button id="cx">Cancelar</button><button class="pri" id="ok">Salvar</button></div>
+</div></dialog>
+
+<script>
+const CATS=[
+ {id:"terc",n:"Aguardando retorno de terceiros",c:"var(--y)"},
+ {id:"trat",n:"Em tratativa / acompanhamento / conclusão de reparo",c:"var(--g)"},
+ {id:"jur",n:"Jurídico",c:"var(--b)"},
+ {id:"orc",n:"Aguardando orçamento / avaliação",c:"var(--y)"},
+ {id:"doc",n:"Aguardando documentação / B.O.",c:"var(--y)"}];
+const SEED=[
+{v:"UDA0D66",t:"FIAT – COLISÃO COM TERCEIRO",c:"terc",s:"Em andamento",o:"Aguardando o veículo para avaliação das avarias e retorno do terceiro com as documentações necessárias para continuidade das tratativas.",e:""},
+{v:"QSW7F71",t:"HILUX – COLISÃO COM TERCEIRO",c:"doc",s:"Em andamento",o:"Boletim de Ocorrência realizado. Aguardando a identificação do motorista terceiro para lançamento na Porto, além das imagens das câmeras do posto e documentação do envolvido.",e:"Terceiro: Diego Silva da França | Chassi: 8AJKA3CD4R3134350 | Placa: SVN0D56"},
+{v:"UEZ4A42",t:"VM PT – COLISÃO COM TERCEIRO",c:"doc",s:"Em andamento",o:"Realização do Boletim de Ocorrência com o relato do motorista. Aguardando contato do responsável pela empresa envolvida, envio das documentações e orçamento dos danos ao veículo terceiro para abertura do sinistro na Porto. Motorista realizará o B.O. presencialmente.",e:""},
+{v:"UFF9D05",t:"CAPOTAMENTO",c:"trat",s:"Pendente",o:"Veículo com previsão de conclusão dos reparos em 15/10/2026.",e:"",p:"2026-10-15"},
+{v:"FQH7B86",t:"COLISÃO COM TERCEIRO",c:"orc",s:"Pendente",o:"Aguardando retorno do orçamento e apresentação. Após a conclusão, será realizado o desconto referente ao sinistro junto ao motorista.",e:""},
+{v:"QSS0C95",t:"COLISÃO COM VEÍCULO TERCEIRO",c:"terc",s:"Em tratativa",o:"Aguardando retorno do responsável pela empresa. Contato realizado em 28/09, sem retorno até o momento. O terceiro informou que realizará a compra do retrovisor avariado.",e:""},
+{v:"UER6B68",t:"COLISÃO COM VEÍCULO TERCEIRO",c:"terc",s:"Em andamento",o:"Aguardando retorno do terceiro. Será realizado novo contato para encaminhamento do orçamento referente aos danos.",e:""},
+{v:"QSU5A87",t:"COLISÃO COM VEÍCULO TERCEIRO",c:"jur",s:"Jurídico",o:"Caso encaminhado ao Jurídico por e-mail, via Feishu, para análise e providências.",e:""},
+{v:"UEP0I04",t:"COLISÃO ENVOLVENDO POSTO",c:"jur",s:"Jurídico",o:"Caso encaminhado ao Jurídico por e-mail, via Feishu, para análise e providências.",e:""},
+{v:"QSV4I25",t:"COLISÃO COM VEÍCULO TERCEIRO",c:"jur",s:"Jurídico",o:"Caso será encaminhado ao Jurídico devido à não localização do terceiro envolvido. Aguardando o motorista enviar o B.O., pois está com dificuldades para acessar o Gmail pelo celular onde o documento está disponível. O motorista foi orientado a comparecer ao escritório para receber auxílio no acesso ao documento.",e:""},
+{v:"UFV5H66",t:"COLISÃO COM VEÍCULO TERCEIRO",c:"trat",s:"Em tratativa",o:"O proprietário do veículo envolvido informou possuir cobertura securitária e que acionará a seguradora para providenciar a cobertura dos danos ocasionados ao nosso caminhão.",e:""},
+{v:"UEO5F19",t:"COLISÃO COM TERCEIRO",c:"terc",s:"Aguardando retorno de terceiros",o:"O motorista terceiro da Fontanella Transportes colidiu com a carreta UEO5F19, que realizava a rota MRB. Foi disponibilizado um contato da empresa responsável para prosseguimento das tratativas. Aguardando retorno para continuidade do atendimento.",e:"Terceiro: RKW6H30 | Empresa: Fontanella Transportes\nMotorista J&T: Edilson Pereira Rocha | Rota: MRB"},
+{v:"UGO1I36",t:"COLISÃO NO PÁTIO",c:"orc",s:"Em acompanhamento",o:"Aguardando retorno da seguradora Yelum para continuidade do processo.",e:""}
+];
+const KEY="sinistros-v1";
+let S={date:new Date().toISOString().slice(0,10),items:SEED.map((x,i)=>({...x,id:i+1}))};
+try{const r=localStorage.getItem(KEY);if(r)S=JSON.parse(r)}catch(e){}
+let filter=null,editId=null;
+const $=id=>document.getElementById(id);
+const esc=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const fmt=d=>d.split("-").reverse().join("/");
+function prev(d){
+  if(!d)return '<span style="color:var(--mut)">—</span>';
+  const t=new Date().toISOString().slice(0,10),n=Math.round((new Date(d)-new Date(t))/864e5);
+  const tx=n<0?`atrasado ${-n} d`:n===0?"hoje":`em ${n} d`;
+  return `<div class="pv ${n<0?"late":""}">${fmt(d)}<small>${tx}</small></div>`;
+}
+const cat=id=>CATS.find(c=>c.id===id)||CATS[0];
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
+$("f_c").innerHTML=CATS.map(c=>`<option value="${c.id}">${c.n}</option>`).join("");
+$("dt").value=S.date;
+$("dt").onchange=e=>{S.date=e.target.value;save()};
+
+function render(){
+  const n=S.items.length;
+  $("sum").innerHTML=`<div class="box total" style="cursor:default"><div><span>TOTAL DE SINISTROS</span><br><b>${String(n).padStart(2,"0")}</b><br><span>EM ACOMPANHAMENTO</span></div></div>`+
+   CATS.map(c=>{const k=S.items.filter(i=>i.c===c.id).length;
+    return `<div class="box ${filter===c.id?"on":""}" data-c="${c.id}"><i class="dot" style="background:${c.c}"></i><div><b>${String(k).padStart(2,"0")}</b><br><span>${c.n}</span></div></div>`}).join("");
+  document.querySelectorAll(".box[data-c]").forEach(b=>b.onclick=()=>{filter=filter===b.dataset.c?null:b.dataset.c;render()});
+  const q=$("q").value.toLowerCase();
+  const rows=S.items.filter(i=>(!filter||i.c===filter)&&(!q||[i.v,i.t,i.s,i.o,i.e].join(" ").toLowerCase().includes(q)));
+  $("tb").innerHTML=rows.length?rows.map(i=>`<tr>
+    <td class="v">${esc(i.v)}</td><td class="t">${esc(i.t)}</td>
+    <td><div class="sit"><i class="dot" style="background:${cat(i.c).c}"></i>${esc(i.s)}</div></td>
+    <td>${esc(i.o)}${i.e?`<div class="ex">${esc(i.e)}</div>`:""}</td>
+    <td>${prev(i.p)}</td>
+    <td class="act"><button data-e="${i.id}">Editar</button> <button data-d="${i.id}">✕</button></td></tr>`).join(""):`<tr><td colspan="6" class="empty">Nenhum sinistro encontrado.</td></tr>`;
+  document.querySelectorAll("[data-e]").forEach(b=>b.onclick=()=>open(+b.dataset.e));
+  document.querySelectorAll("[data-d]").forEach(b=>b.onclick=()=>{if(confirm("Excluir este sinistro?")){S.items=S.items.filter(i=>i.id!==+b.dataset.d);save();render()}});
+}
+function open(id){
+  editId=id;const i=S.items.find(x=>x.id===id)||{v:"",t:"",c:"terc",s:"",o:"",e:""};
+  $("f_v").value=i.v;$("f_t").value=i.t;$("f_c").value=i.c;$("f_s").value=i.s;$("f_o").value=i.o;$("f_e").value=i.e;$("f_p").value=i.p||"";
+  $("dlg").showModal();
+}
+$("add").onclick=()=>open(null);
+$("cx").onclick=()=>$("dlg").close();
+$("ok").onclick=()=>{
+  const d={v:$("f_v").value.trim().toUpperCase(),t:$("f_t").value.trim(),c:$("f_c").value,s:$("f_s").value.trim(),o:$("f_o").value.trim(),e:$("f_e").value.trim(),p:$("f_p").value};
+  if(!d.v){$("f_v").focus();return}
+  if(editId){Object.assign(S.items.find(x=>x.id===editId),d)}
+  else{S.items.push({...d,id:Math.max(0,...S.items.map(x=>x.id))+1});S.date=new Date().toISOString().slice(0,10);$("dt").value=S.date}
+  save();$("dlg").close();render();
+};
+$("q").oninput=render;
+$("print").onclick=()=>window.print();
+render();
+</script>
+</body>
+</html>
