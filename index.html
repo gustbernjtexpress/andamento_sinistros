@@ -13,21 +13,21 @@
 html{scroll-padding-top:env(safe-area-inset-top,0px)}
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;font-size:14px}
-.wrap{max-width:1100px;margin:0 auto;padding:16px}
+.wrap{max-width:1500px;margin:0 auto;padding:20px 28px}
 header{display:flex;align-items:center;gap:14px;flex-wrap:wrap;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:14px 18px;border-bottom:3px solid var(--red)}
-.logo{font-weight:900;font-style:italic;color:var(--red);font-size:26px;letter-spacing:-1px}
+.logo{font-weight:900;font-style:italic;color:var(--red);font-size:34px;letter-spacing:-1px;padding-right:16px;border-right:1px solid var(--line)}
 .logo small{font-size:15px}
-h1{margin:0;font-size:22px;line-height:1.1}
+h1{margin:0;font-size:26px;line-height:1.1}
 .sub{color:var(--mut);display:flex;align-items:center;gap:6px;margin-top:2px}
 .sub input{border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:6px;padding:2px 6px}
 .tools{margin-left:auto;display:flex;gap:8px;flex-wrap:wrap}
 button,select,input,textarea{font:inherit}
 button{cursor:pointer;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:6px;padding:6px 12px}
 button.pri{background:var(--red);border-color:var(--red);color:#fff}
-.sum{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:14px 0}
-.box{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:12px 14px;cursor:pointer;display:flex;gap:10px;align-items:center}
+.sum{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px;margin:16px 0}
+.box{background:var(--card);border:1px solid var(--line);border-top:4px solid var(--line);border-radius:10px;padding:12px 14px;cursor:pointer;display:flex;gap:10px;align-items:center}
 .box.on{outline:2px solid var(--red)}
-.box b{font-size:28px;line-height:1}
+.box b{font-size:32px;line-height:1}
 .box span{color:var(--mut);font-size:12px;line-height:1.25}
 .dot{width:14px;height:14px;border-radius:50%;flex:none;display:inline-block}
 .total b{font-size:38px}
@@ -35,8 +35,12 @@ button.pri{background:var(--red);border-color:var(--red);color:#fff}
 .bar input{flex:1;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:6px;padding:7px 10px}
 .tw{overflow-x:auto;background:var(--card);border:1px solid var(--line);border-radius:10px}
 table{width:100%;border-collapse:collapse;min-width:900px}
-th{background:var(--head);color:#fff;text-align:left;padding:10px 12px;font-size:12px;letter-spacing:.05em;text-transform:uppercase}
+th{position:sticky;top:0;background:var(--head);color:#fff;text-align:left;padding:10px 12px;font-size:12px;letter-spacing:.05em;text-transform:uppercase}
 td{padding:10px 12px;border-top:1px solid var(--line);vertical-align:top}
+tbody tr:nth-child(even) td{background:rgba(127,127,127,.06)}
+tbody tr:hover td{background:rgba(215,25,32,.07)}
+th:nth-child(1){width:110px}th:nth-child(2){width:210px}th:nth-child(3){width:170px}th:nth-child(4){width:auto}th:nth-child(5){width:120px}th:nth-child(6){width:120px}
+@media (min-width:1100px){body{font-size:15px}td,th{padding:12px 16px}.tw{overflow:visible}table{min-width:0}}
 td.v{font-weight:700}
 td.t{color:var(--mut);font-size:12px;text-transform:uppercase}
 .sit{display:flex;gap:8px;align-items:center;white-space:nowrap}
@@ -50,7 +54,17 @@ label{display:block;margin:8px 0 3px;font-size:12px;color:var(--mut)}
 dialog input,dialog select,dialog textarea{width:100%;border:1px solid var(--line);background:var(--bg);color:var(--ink);border-radius:6px;padding:7px}
 .row{display:flex;gap:8px;justify-content:flex-end;margin-top:14px}
 .empty{padding:24px;text-align:center;color:var(--mut)}
-@media print{.tools,.bar,.act{display:none}body{background:#fff}}
+@page{size:A4 landscape;margin:9mm}
+@media print{
+:root,:root[data-theme]{--bg:#fff!important;--card:#fff!important;--ink:#111!important;--mut:#555!important;--line:#ccc!important;--head:#2b3a4a!important}
+*{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+.tools,.bar,.act{display:none}
+.wrap{max-width:none;padding:0}body{font-size:10px;background:#fff}
+header{padding:8px 12px}.logo{font-size:24px}h1{font-size:18px}.sub input{border:0;padding:0;width:auto}
+.sum{gap:6px;margin:8px 0}.box{padding:6px 8px}.box b{font-size:20px}.total b{font-size:24px}
+table{min-width:0}th,td{padding:5px 8px}thead{display:table-header-group}tr{break-inside:avoid}
+th:nth-child(6),td:nth-child(6){display:none}
+.tw{overflow:visible}th{position:static}tbody tr:hover td{background:none}}
 </style>
 </head>
 <body>
@@ -63,7 +77,7 @@ dialog input,dialog select,dialog textarea{width:100%;border:1px solid var(--lin
   </div>
   <div class="tools">
     <button class="pri" id="add">+ Novo sinistro</button>
-    <button id="print">Imprimir / PDF</button>
+    <button id="print">⬇ Gerar PDF</button>
   </div>
 </header>
 
@@ -130,9 +144,9 @@ $("dt").onchange=e=>{S.date=e.target.value;save()};
 
 function render(){
   const n=S.items.length;
-  $("sum").innerHTML=`<div class="box total" style="cursor:default"><div><span>TOTAL DE SINISTROS</span><br><b>${String(n).padStart(2,"0")}</b><br><span>EM ACOMPANHAMENTO</span></div></div>`+
+  $("sum").innerHTML=`<div class="box total" style="cursor:default;border-top-color:var(--red)"><div><span>TOTAL DE SINISTROS</span><br><b>${String(n).padStart(2,"0")}</b><br><span>EM ACOMPANHAMENTO</span></div></div>`+
    CATS.map(c=>{const k=S.items.filter(i=>i.c===c.id).length;
-    return `<div class="box ${filter===c.id?"on":""}" data-c="${c.id}"><i class="dot" style="background:${c.c}"></i><div><b>${String(k).padStart(2,"0")}</b><br><span>${c.n}</span></div></div>`}).join("");
+    return `<div class="box ${filter===c.id?"on":""}" data-c="${c.id}" style="border-top-color:${c.c}"><i class="dot" style="background:${c.c}"></i><div><b>${String(k).padStart(2,"0")}</b><br><span>${c.n}</span></div></div>`}).join("");
   document.querySelectorAll(".box[data-c]").forEach(b=>b.onclick=()=>{filter=filter===b.dataset.c?null:b.dataset.c;render()});
   const q=$("q").value.toLowerCase();
   const rows=S.items.filter(i=>(!filter||i.c===filter)&&(!q||[i.v,i.t,i.s,i.o,i.e].join(" ").toLowerCase().includes(q)));
@@ -160,7 +174,10 @@ $("ok").onclick=()=>{
   save();$("dlg").close();render();
 };
 $("q").oninput=render;
-$("print").onclick=()=>window.print();
+$("print").onclick=()=>{
+  const t=document.title;document.title="Andamento de Sinistros - "+fmt(S.date).replace(/\//g,"-");
+  window.onafterprint=()=>{document.title=t};window.print();
+};
 render();
 </script>
 </body>
