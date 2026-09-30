@@ -97,6 +97,7 @@ th:nth-child(6),td:nth-child(6){display:none}
     <div class="sub">Atualizado em <input type="date" id="dt"><span id="bk" style="font-size:12px;margin-left:10px"></span></div>
   </div>
   <div class="tools">
+    <span style="align-self:center;color:var(--mut);font-size:12px">Idioma:</span><button data-l="pt">Português</button><button data-l="zh">中文</button><button data-l="both">Ambos</button>
     <button class="pri" id="add">+ Novo sinistro</button>
     <button id="img">📷 Baixar imagem</button>
     <button id="print">⬇ Gerar PDF</button>
@@ -108,7 +109,7 @@ th:nth-child(6),td:nth-child(6){display:none}
 
 <div class="bar"><input id="q" placeholder="Buscar placa, tipo ou observação…"><span id="trn" style="font-size:12px;color:var(--red);align-self:center"></span><button id="vc">▦ Cards</button><button id="vt">☰ Tabela</button><button id="all">Expandir tudo</button></div>
 <div class="tw" id="tw"><table>
-  <thead><tr><th>Veículo<span class="hz">车辆</span></th><th>Tipo<span class="hz">类型</span></th><th>Situação<span class="hz">状态</span></th><th>Tratativa / Observações<span class="hz">处理情况 / 备注</span></th><th>Previsão<span class="hz">预计日期</span></th><th class="act"></th></tr></thead>
+  <thead><tr id="hr"></tr></thead>
   <tbody id="tb"></tbody>
 </table></div>
 <div class="cards" id="cards"></div>
@@ -143,15 +144,21 @@ const SEED=[];
 const KEY="sinistros-v1";
 let S={date:new Date().toISOString().slice(0,10),items:SEED.map((x,i)=>({...x,id:i+1}))};
 try{const r=localStorage.getItem(KEY);if(r)S=JSON.parse(r)}catch(e){}
-let filter=null,editId=null;const exp=new Set();let view="cards";try{view=localStorage.getItem("sinistros-view")||"cards"}catch(e){}
+let filter=null,editId=null;const exp=new Set();let lang="pt";try{lang=localStorage.getItem("sinistros-lang")||"pt"}catch(e){}let view="cards";try{view=localStorage.getItem("sinistros-view")||"cards"}catch(e){}
 const $=id=>document.getElementById(id);
 const esc=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const ZL=(pt,z)=>lang==="pt"?{main:pt,sub:""}:lang==="zh"?{main:z||pt,sub:""}:{main:pt,sub:z||""};
+const zj=(pt,z)=>lang==="pt"?pt:lang==="zh"?z:pt+' · <span class="zh0">'+z+'</span>';
+const pair=(pt,z)=>{const m=ZL(pt,z);return esc(m.main)+(m.sub?`<div class="zh z0">${esc(m.sub)}</div>`:"")};
+const obHtml=i=>{const m=ZL(i.o,oz(i));return `<div class="ob">${esc(m.main)}</div>${m.sub?`<div class="zh z0">${esc(m.sub)}</div>`:""}`};
+const H=[["Veículo","车辆"],["Tipo","类型"],["Situação","状态"],["Tratativa / Observações","处理情况 / 备注"],["Previsão","预计日期"]];
 const fmt=d=>d.split("-").reverse().join("/");
 function prev(d){
   if(!d)return '<span style="color:var(--mut)">—</span>';
   const t=new Date().toISOString().slice(0,10),n=Math.round((new Date(d)-new Date(t))/864e5);
   const tx=n<0?`atrasado ${-n} d`:n===0?"hoje":`em ${n} d`;
-  return `<div class="pv ${n<0?"late":""}">${fmt(d)}<small>${tx} · ${n<0?`逾期${-n}天`:n===0?"今天":`还有${n}天`}</small></div>`;
+  const zt0=n<0?`逾期${-n}天`:n===0?"今天":`还有${n}天`,zt=lang==="zh"?zt0:lang==="both"?tx+" · "+zt0:tx;
+  return `<div class="pv ${n<0?"late":""}">${fmt(d)}<small>${zt}</small></div>`;
 }
 const cat=id=>CATS.find(c=>c.id===id)||CATS[0];
 function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
@@ -179,26 +186,28 @@ $("dt").onchange=e=>{S.date=e.target.value;save()};
 
 function render(){setTimeout(labelAll,0);setTimeout(autoTr,50);
   const n=S.items.length;
-  $("sum").innerHTML=`<div class="box total" style="cursor:default;border-top-color:var(--red)"><div><span>TOTAL DE SINISTROS · <span class="zh0">案件总数</span></span><br><b>${String(n).padStart(2,"0")}</b><br><span>EM ACOMPANHAMENTO · <span class="zh0">跟进中</span></span></div></div>`+
+  $("sum").innerHTML=`<div class="box total" style="cursor:default;border-top-color:var(--red)"><div><span>${zj("TOTAL DE SINISTROS","案件总数")}</span><br><b>${String(n).padStart(2,"0")}</b><br><span>${zj("EM ACOMPANHAMENTO","跟进中")}</span></div></div>`+
    CATS.map(c=>{const k=S.items.filter(i=>i.c===c.id).length;if(c.id==="out"&&!k)return"";
-    return `<div class="box ${filter===c.id?"on":""}" data-c="${c.id}" style="border-top-color:${c.c}"><i class="dot" style="background:${c.c}"></i><div><b>${String(k).padStart(2,"0")}</b><br><span>${c.n}</span><br><span class="zh0">${CZ[c.id]}</span></div></div>`}).join("");
+    return `<div class="box ${filter===c.id?"on":""}" data-c="${c.id}" style="border-top-color:${c.c}"><i class="dot" style="background:${c.c}"></i><div><b>${String(k).padStart(2,"0")}</b><br>${(m=>`<span>${m.main}</span>${m.sub?`<br><span class="zh0">${m.sub}</span>`:""}`)(ZL(c.n,CZ[c.id]))}</div></div>`}).join("");
   document.querySelectorAll(".box[data-c]").forEach(b=>b.onclick=()=>{filter=filter===b.dataset.c?null:b.dataset.c;render()});
   const q=$("q").value.toLowerCase();
   const rows=S.items.filter(i=>(!filter||i.c===filter)&&(!q||[i.v,i.t,i.s,i.co,i.o,i.e].join(" ").toLowerCase().includes(q)));
   $("tb").innerHTML=view!=="table"?"":rows.length?rows.map(i=>`<tr class="${exp.has(i.id)?"open":""}">
-    <td class="v">${esc(i.v)}</td><td class="t" title="${esc(i.t)}">${esc(i.t)}${tz(i)?`<div class="zh z0">${esc(tz(i))}</div>`:""}</td>
-    <td class="s"><div class="sit"><i class="dot" style="background:${cat(i.c).c}"></i><span title="${esc(sit(i))}">${esc(sit(i))}</span></div>${zh(i)?`<div class="zh">${esc(zh(i))}</div>`:""}</td>
-    <td><div class="ob">${esc(i.o)}</div>${oz(i)?`<div class="zh z0">${esc(oz(i))}</div>`:""}${i.e?`<div class="ex">${esc(i.e)}</div>`:""}</td>
+    <td class="v">${esc(i.v)}</td><td class="t" title="${esc(i.t)}">${pair(i.t,tz(i))}</td>
+    <td class="s"><div class="sit"><i class="dot" style="background:${cat(i.c).c}"></i>${(m=>`<span title="${esc(m.main)}">${esc(m.main)}</span></div>${m.sub?`<div class="zh">${esc(m.sub)}</div>`:""}`)(ZL(sit(i),zh(i)))}</td>
+    <td>${obHtml(i)}${i.e?`<div class="ex">${esc(i.e)}</div>`:""}</td>
     <td>${prev(i.p)}</td>
     <td class="act"><button data-x="${i.id}">${exp.has(i.id)?"Ver menos":"Ver mais"}</button> <button data-e="${i.id}">Editar</button> <button data-d="${i.id}">✕</button></td></tr>`).join(""):`<tr><td colspan="6" class="empty">${S.items.length?"Nenhum sinistro encontrado.":"Nenhum sinistro cadastrado. Clique em “+ Novo sinistro”."}</td></tr>`;
+  $("hr").innerHTML=H.map(([a,b])=>{const m=ZL(a,b);return `<th>${esc(m.main)}${m.sub?`<span class="hz">${esc(m.sub)}</span>`:""}</th>`}).join("")+'<th class="act"></th>';
+  document.querySelectorAll("[data-l]").forEach(b=>b.classList.toggle("on2",b.dataset.l===lang));
   $("tw").hidden=view!=="table";$("cards").hidden=view!=="cards";
   $("vc").classList.toggle("on2",view==="cards");$("vt").classList.toggle("on2",view==="table");
   $("cards").innerHTML=view!=="cards"?"":rows.length?rows.map(i=>{const o=exp.has(i.id),z=zh(i),t2=tz(i),o2=oz(i),c=cat(i.c);
     return `<div class="card ${o?"open":""}" style="border-top-color:${c.c}">
     <div class="ch"><b>${esc(i.v)}</b><div class="cp">${prev(i.p)}</div></div>
-    <div class="ct">${esc(i.t)}</div>${t2?`<div class="zh z0">${esc(t2)}</div>`:""}
-    <div class="cs"><i class="dot" style="background:${c.c}"></i><span>${esc(sit(i))}</span>${z?`<span class="zh z0">· ${esc(z)}</span>`:""}</div>
-    <div class="cb"><div class="ob">${esc(i.o)}</div>${o2?`<div class="zh z0">${esc(o2)}</div>`:""}${i.e?`<div class="ex">${esc(i.e)}</div>`:""}</div>
+    <div class="ct">${pair(i.t,t2)}</div>
+    <div class="cs"><i class="dot" style="background:${c.c}"></i>${(m=>`<span>${esc(m.main)}</span>${m.sub?`<span class="zh z0">· ${esc(m.sub)}</span>`:""}`)(ZL(sit(i),z))}</div>
+    <div class="cb">${obHtml(i)}${i.e?`<div class="ex">${esc(i.e)}</div>`:""}</div>
     <div class="ca"><button data-x="${i.id}">${o?"Ver menos":"Ver mais"}</button><button data-e="${i.id}">Editar</button><button data-d="${i.id}">✕</button></div></div>`}).join(""):`<div class="empty">${S.items.length?"Nenhum sinistro encontrado.":"Nenhum sinistro cadastrado. Clique em “+ Novo sinistro”."}</div>`;
   document.querySelectorAll("[data-x]").forEach(b=>b.onclick=()=>{const k=+b.dataset.x;exp.has(k)?exp.delete(k):exp.add(k);render()});
   document.querySelectorAll("[data-e]").forEach(b=>b.onclick=()=>open(+b.dataset.e));
@@ -223,6 +232,7 @@ $("ok").onclick=()=>{
 };
 $("q").oninput=render;
 const setView=v=>{view=v;try{localStorage.setItem("sinistros-view",v)}catch(e){}render()};
+document.querySelectorAll("[data-l]").forEach(b=>b.onclick=()=>{lang=b.dataset.l;try{localStorage.setItem("sinistros-lang",lang)}catch(e){}render()});
 $("vc").onclick=()=>setView("cards");$("vt").onclick=()=>setView("table");
 $("all").onclick=()=>{const ids=S.items.map(i=>i.id);if(exp.size<ids.length)ids.forEach(x=>exp.add(x));else exp.clear();render()};
 $("img").onclick=async()=>{
@@ -263,7 +273,7 @@ async function mm(text){
   return out.join(" ");
 }
 async function autoTr(){
-  if(busy)return;busy=true;
+  if(busy||lang==="pt")return;busy=true;
   for(const i of S.items){
     for(const [src,man,dic,zs,za] of [["t","tz",1,"tzs","tza"],["o","oz",0,"ozs","oza"]]){
       const txt=(i[src]||"").trim();
