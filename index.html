@@ -6,13 +6,11 @@
 <title>Andamento de Sinistros</title>
 <style>
 :root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
---bg:#f4f6f9;--card:#fff;--ink:#1f2a37;--mut:#64748b;--line:#e2e8f0;--head:#2b3a4a;--red:#d71920;
---y:#f5a623;--g:#2e9e4f;--b:#1f6feb}
-:root[data-theme="dark"]{--bg:#111827;--card:#1b2433;--ink:#e5e7eb;--mut:#94a3b8;--line:#2d3a4d;--head:#0b1220}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#111827;--card:#1b2433;--ink:#e5e7eb;--mut:#94a3b8;--line:#2d3a4d;--head:#0b1220}}
+color-scheme:light;--bg:#ffffff;--card:#fff;--ink:#1f2a37;--mut:#64748b;--line:#e2e8f0;--head:#2b3a4a;--red:#d71920;
+--y:#f5a623;--g:#2e9e4f;--b:#1f6feb;--zh:#475569}
 html{scroll-padding-top:env(safe-area-inset-top,0px)}
 *{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;font-size:14px}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,"Segoe UI",Roboto,"PingFang SC","Microsoft YaHei","Noto Sans SC",sans-serif;font-size:14px}
 .wrap{max-width:1500px;margin:0 auto;padding:20px 28px}
 header{display:flex;align-items:center;gap:14px;flex-wrap:wrap;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:14px 18px;border-bottom:3px solid var(--red)}
 .logo{font-weight:900;font-style:italic;color:var(--red);font-size:34px;letter-spacing:-1px;padding-right:16px;border-right:1px solid var(--line)}
@@ -38,12 +36,14 @@ table{width:100%;border-collapse:collapse;min-width:900px;table-layout:fixed}
 tbody tr:not(.open) td.t,tbody tr:not(.open) td.s,tbody tr:not(.open) .ob,.sit span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 tbody tr:not(.open) .ex{display:none}
 .sit{min-width:0}.sit span{min-width:0}tr.open .sit{white-space:normal}tr.open .sit span{white-space:normal}
+.zh{margin:3px 0 0 22px;font-size:13px;color:var(--zh);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}tr.open .zh{white-space:normal}
+.hz{display:block;text-transform:none;letter-spacing:0;font-weight:500;font-size:12px;margin-top:2px;color:var(--zh)}.zh0{color:var(--zh)}.z0{margin-left:0}.pv .zh{margin:0;font-size:12px}
 .act button[data-x]{color:var(--red);border-color:var(--red)}
-th{position:sticky;top:0;background:var(--head);color:#fff;text-align:left;padding:10px 12px;font-size:12px;letter-spacing:.05em;text-transform:uppercase}
+th{position:sticky;top:0;background:#fff;color:var(--ink);border-bottom:2px solid var(--red);text-align:left;padding:10px 12px;font-size:12px;letter-spacing:.05em;text-transform:uppercase}
 td{padding:10px 12px;border-top:1px solid var(--line);vertical-align:top}
 tbody tr:nth-child(even) td{background:rgba(127,127,127,.06)}
 tbody tr:hover td{background:rgba(215,25,32,.07)}
-th:nth-child(1){width:110px}th:nth-child(2){width:210px}th:nth-child(3){width:170px}th:nth-child(4){width:auto}th:nth-child(5){width:120px}th:nth-child(6){width:235px}
+th:nth-child(1){width:110px}th:nth-child(2){width:210px}th:nth-child(3){width:200px}th:nth-child(4){width:auto}th:nth-child(5){width:120px}th:nth-child(6){width:235px}
 @media (min-width:1100px){body{font-size:15px}td,th{padding:12px 16px}.tw{overflow:visible}table{min-width:0}}
 td.v{font-weight:700}
 td.t{color:var(--mut);font-size:12px;text-transform:uppercase}
@@ -60,7 +60,7 @@ dialog input,dialog select,dialog textarea{width:100%;border:1px solid var(--lin
 .empty{padding:24px;text-align:center;color:var(--mut)}
 @page{size:A4 landscape;margin:9mm}
 @media print{
-:root,:root[data-theme]{--bg:#fff!important;--card:#fff!important;--ink:#111!important;--mut:#555!important;--line:#ccc!important;--head:#2b3a4a!important}
+:root,:root[data-theme]{--bg:#fff!important;--card:#fff!important;--ink:#111!important;--mut:#555!important;--zh:#374151!important;--line:#ccc!important;--head:#2b3a4a!important}
 *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
 .tools,.bar,.act{display:none}
 .wrap{max-width:none;padding:0}body{font-size:10px;background:#fff}
@@ -69,7 +69,7 @@ header{padding:8px 12px}.logo{font-size:24px}h1{font-size:18px}.sub input{border
 table{min-width:0}th,td{padding:5px 8px}thead{display:table-header-group}tr{break-inside:avoid}
 th:nth-child(6),td:nth-child(6){display:none}
 .tw{overflow:visible}th{position:static}tbody tr:hover td{background:none}
-.ob,.sit span,td.t,td.s{white-space:normal!important;overflow:visible!important;text-overflow:clip!important}.ex{display:block!important}.act button{display:none}}
+.zh,.ob,.sit span,td.t,td.s{white-space:normal!important;overflow:visible!important;text-overflow:clip!important}.ex{display:block!important}.act button{display:none}}
 </style>
 </head>
 <body>
@@ -88,9 +88,9 @@ th:nth-child(6),td:nth-child(6){display:none}
 
 <div class="sum" id="sum"></div>
 
-<div class="bar"><input id="q" placeholder="Buscar placa, tipo ou observação…"><button id="all">Expandir tudo</button></div>
+<div class="bar"><input id="q" placeholder="Buscar placa, tipo ou observação…"><span id="trn" style="font-size:12px;color:var(--red);align-self:center"></span><button id="all">Expandir tudo</button></div>
 <div class="tw"><table>
-  <thead><tr><th>Veículo</th><th>Tipo</th><th>Situação</th><th>Tratativa / Observações</th><th>Previsão</th><th class="act"></th></tr></thead>
+  <thead><tr><th>Veículo<span class="hz">车辆</span></th><th>Tipo<span class="hz">类型</span></th><th>Situação<span class="hz">状态</span></th><th>Tratativa / Observações<span class="hz">处理情况 / 备注</span></th><th>Previsão<span class="hz">预计日期</span></th><th class="act"></th></tr></thead>
   <tbody id="tb"></tbody>
 </table></div>
 </div>
@@ -98,10 +98,14 @@ th:nth-child(6),td:nth-child(6){display:none}
 <dialog id="dlg"><div>
   <label>Veículo (placa)</label><input id="f_v">
   <label>Tipo</label><input id="f_t" placeholder="Ex.: COLISÃO COM TERCEIRO">
+  <label>Tipo em mandarim (opcional, se ficar vazio traduz sozinho)</label><input id="f_tz" placeholder="Ex.: 与第三方碰撞">
   <label>Categoria (resumo)</label><select id="f_c"></select>
   <div id="f_cow" hidden><label>Qual categoria? (escreva)</label><input id="f_co" placeholder="Ex.: Aguardando peça"></div>
   <label>Situação (texto exibido)</label><input id="f_s" placeholder="Ex.: Em andamento">
+  <label>Situação em mandarim (opcional, preenche sozinho se ficar vazio)</label><input id="f_z" placeholder="Ex.: 进行中">
   <label>Tratativa / Observações</label><textarea id="f_o" rows="4"></textarea>
+  <label>Tratativa em mandarim (opcional, se ficar vazio traduz sozinho)</label><textarea id="f_oz" rows="3" placeholder="Cole aqui a tradução em chinês"></textarea>
+  <button type="button" id="tr" style="margin-top:6px">Traduzir no Google Tradutor ↗</button>
   <label>Previsão (conclusão / retorno)</label><input type="date" id="f_p">
   <label>Detalhes extras (terceiro, chassi, empresa, rota…)</label><textarea id="f_e" rows="2"></textarea>
   <div class="row"><button id="cx">Cancelar</button><button class="pri" id="ok">Salvar</button></div>
@@ -115,21 +119,7 @@ const CATS=[
  {id:"orc",n:"Aguardando orçamento / avaliação",c:"var(--y)"},
  {id:"doc",n:"Aguardando documentação / B.O.",c:"var(--y)"},
  {id:"out",n:"Outros",c:"var(--mut)"}];
-const SEED=[
-{v:"UDA0D66",t:"FIAT – COLISÃO COM TERCEIRO",c:"terc",s:"Em andamento",o:"Aguardando o veículo para avaliação das avarias e retorno do terceiro com as documentações necessárias para continuidade das tratativas.",e:""},
-{v:"QSW7F71",t:"HILUX – COLISÃO COM TERCEIRO",c:"doc",s:"Em andamento",o:"Boletim de Ocorrência realizado. Aguardando a identificação do motorista terceiro para lançamento na Porto, além das imagens das câmeras do posto e documentação do envolvido.",e:"Terceiro: Diego Silva da França | Chassi: 8AJKA3CD4R3134350 | Placa: SVN0D56"},
-{v:"UEZ4A42",t:"VM PT – COLISÃO COM TERCEIRO",c:"doc",s:"Em andamento",o:"Realização do Boletim de Ocorrência com o relato do motorista. Aguardando contato do responsável pela empresa envolvida, envio das documentações e orçamento dos danos ao veículo terceiro para abertura do sinistro na Porto. Motorista realizará o B.O. presencialmente.",e:""},
-{v:"UFF9D05",t:"CAPOTAMENTO",c:"trat",s:"Pendente",o:"Veículo com previsão de conclusão dos reparos em 15/10/2026.",e:"",p:"2026-10-15"},
-{v:"FQH7B86",t:"COLISÃO COM TERCEIRO",c:"orc",s:"Pendente",o:"Aguardando retorno do orçamento e apresentação. Após a conclusão, será realizado o desconto referente ao sinistro junto ao motorista.",e:""},
-{v:"QSS0C95",t:"COLISÃO COM VEÍCULO TERCEIRO",c:"terc",s:"Em tratativa",o:"Aguardando retorno do responsável pela empresa. Contato realizado em 28/09, sem retorno até o momento. O terceiro informou que realizará a compra do retrovisor avariado.",e:""},
-{v:"UER6B68",t:"COLISÃO COM VEÍCULO TERCEIRO",c:"terc",s:"Em andamento",o:"Aguardando retorno do terceiro. Será realizado novo contato para encaminhamento do orçamento referente aos danos.",e:""},
-{v:"QSU5A87",t:"COLISÃO COM VEÍCULO TERCEIRO",c:"jur",s:"Jurídico",o:"Caso encaminhado ao Jurídico por e-mail, via Feishu, para análise e providências.",e:""},
-{v:"UEP0I04",t:"COLISÃO ENVOLVENDO POSTO",c:"jur",s:"Jurídico",o:"Caso encaminhado ao Jurídico por e-mail, via Feishu, para análise e providências.",e:""},
-{v:"QSV4I25",t:"COLISÃO COM VEÍCULO TERCEIRO",c:"jur",s:"Jurídico",o:"Caso será encaminhado ao Jurídico devido à não localização do terceiro envolvido. Aguardando o motorista enviar o B.O., pois está com dificuldades para acessar o Gmail pelo celular onde o documento está disponível. O motorista foi orientado a comparecer ao escritório para receber auxílio no acesso ao documento.",e:""},
-{v:"UFV5H66",t:"COLISÃO COM VEÍCULO TERCEIRO",c:"trat",s:"Em tratativa",o:"O proprietário do veículo envolvido informou possuir cobertura securitária e que acionará a seguradora para providenciar a cobertura dos danos ocasionados ao nosso caminhão.",e:""},
-{v:"UEO5F19",t:"COLISÃO COM TERCEIRO",c:"terc",s:"Aguardando retorno de terceiros",o:"O motorista terceiro da Fontanella Transportes colidiu com a carreta UEO5F19, que realizava a rota MRB. Foi disponibilizado um contato da empresa responsável para prosseguimento das tratativas. Aguardando retorno para continuidade do atendimento.",e:"Terceiro: RKW6H30 | Empresa: Fontanella Transportes\nMotorista J&T: Edilson Pereira Rocha | Rota: MRB"},
-{v:"UGO1I36",t:"COLISÃO NO PÁTIO",c:"orc",s:"Em acompanhamento",o:"Aguardando retorno da seguradora Yelum para continuidade do processo.",e:""}
-];
+const SEED=[];
 const KEY="sinistros-v1";
 let S={date:new Date().toISOString().slice(0,10),items:SEED.map((x,i)=>({...x,id:i+1}))};
 try{const r=localStorage.getItem(KEY);if(r)S=JSON.parse(r)}catch(e){}
@@ -141,30 +131,46 @@ function prev(d){
   if(!d)return '<span style="color:var(--mut)">—</span>';
   const t=new Date().toISOString().slice(0,10),n=Math.round((new Date(d)-new Date(t))/864e5);
   const tx=n<0?`atrasado ${-n} d`:n===0?"hoje":`em ${n} d`;
-  return `<div class="pv ${n<0?"late":""}">${fmt(d)}<small>${tx}</small></div>`;
+  return `<div class="pv ${n<0?"late":""}">${fmt(d)}<small>${tx}</small><small class="zh">${n<0?`逾期${-n}天`:n===0?"今天":`还有${n}天`}</small></div>`;
 }
 const cat=id=>CATS.find(c=>c.id===id)||CATS[0];
 function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
 $("f_c").innerHTML=CATS.map(c=>`<option value="${c.id}">${c.n}</option>`).join("");
 $("dt").value=S.date;
 const tgl=()=>{$("f_cow").hidden=$("f_c").value!=="out"};$("f_c").onchange=tgl;
+const CZ={terc:"等待第三方回复",trat:"处理中 / 跟进 / 维修完成",jur:"法务处理",orc:"等待报价 / 评估",doc:"等待文件 / 警方报告(B.O.)",out:"其他"};
+const TZ={"colisão com terceiro":"与第三方碰撞","colisão com veículo terceiro":"与第三方车辆碰撞","capotamento":"翻车","colisão no pátio":"场站内碰撞","colisão envolvendo posto":"涉及加油站的碰撞","colisão em viagem":"行驶途中碰撞","tombamento":"侧翻","roubo":"被盗","furto":"盗窃","incêndio":"火灾","avaria":"车辆损坏","atropelamento":"撞人"};
+const nz=t=>(t||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().trim();
+const TZN=Object.fromEntries(Object.entries(TZ).map(([k,v])=>[nz(k),v]));
+const WZ={colisao:"碰撞",terceiro:"第三方",terceiros:"第三方",veiculo:"车辆",patio:"场站",posto:"加油站",viagem:"行驶途中",capotamento:"翻车",tombamento:"侧翻",roubo:"被盗",furto:"盗窃",incendio:"火灾",avaria:"损坏",atropelamento:"撞人",motorista:"司机",caminhao:"卡车",carreta:"半挂车",seguradora:"保险公司"};
+const STOP=["com","de","do","da","no","na","em","o","a","e","envolvendo"];
+const tzLocal=t=>{const a=t.trim().split(/\s+[–-]\s+/),k=nz(a[a.length-1]);if(TZN[k])return TZN[k];
+  const w=k.split(/[^a-z]+/).filter(Boolean);
+  if(w.includes("colisao")&&(w.includes("terceiro")||w.includes("terceiros")))return w.includes("veiculo")?"与第三方车辆碰撞":"与第三方碰撞";
+  const need=w.filter(x=>!STOP.includes(x)),z=need.map(x=>WZ[x]).filter(Boolean);
+  return need.length&&z.length===need.length?z.join(" "):""};
+const tz=i=>i.tz||tzLocal(i.t||"")||(i.tzs===i.t?i.tza:"")||"";
+const oz=i=>i.oz||(i.ozs===i.o?i.oza:"")||"";
+const ZH={"em andamento":"进行中","aguardando":"等待中","pendente":"待处理","em tratativa":"处理中","em acompanhamento":"跟进中","jurídico":"法务处理中","juridico":"法务处理中","aguardando retorno de terceiros":"等待第三方回复","aguardando orçamento":"等待报价","aguardando avaliação":"等待评估","aguardando documentação":"等待文件","aguardando b.o.":"等待警方报告(B.O.)","aguardando peça":"等待配件","aguardando seguradora":"等待保险公司","em reparo":"维修中","concluído":"已完成","finalizado":"已完成","cancelado":"已取消"};
+const CZH={terc:"等待第三方回复",trat:"处理中 / 跟进",jur:"法务处理中",orc:"等待报价 / 评估",doc:"等待文件 / 警方报告(B.O.)"};
+const zh=i=>i.z||ZH[(i.s||"").trim().toLowerCase()]||(i.c!=="out"?CZH[i.c]:"")||"";
 const sit=i=>i.c==="out"&&i.co?(i.s?i.s+" · "+i.co:i.co):i.s;
 $("dt").onchange=e=>{S.date=e.target.value;save()};
 
-function render(){setTimeout(labelAll,0);
+function render(){setTimeout(labelAll,0);setTimeout(autoTr,50);
   const n=S.items.length;
-  $("sum").innerHTML=`<div class="box total" style="cursor:default;border-top-color:var(--red)"><div><span>TOTAL DE SINISTROS</span><br><b>${String(n).padStart(2,"0")}</b><br><span>EM ACOMPANHAMENTO</span></div></div>`+
+  $("sum").innerHTML=`<div class="box total" style="cursor:default;border-top-color:var(--red)"><div><span>TOTAL DE SINISTROS · <span class="zh0">案件总数</span></span><br><b>${String(n).padStart(2,"0")}</b><br><span>EM ACOMPANHAMENTO · <span class="zh0">跟进中</span></span></div></div>`+
    CATS.map(c=>{const k=S.items.filter(i=>i.c===c.id).length;if(c.id==="out"&&!k)return"";
-    return `<div class="box ${filter===c.id?"on":""}" data-c="${c.id}" style="border-top-color:${c.c}"><i class="dot" style="background:${c.c}"></i><div><b>${String(k).padStart(2,"0")}</b><br><span>${c.n}</span></div></div>`}).join("");
+    return `<div class="box ${filter===c.id?"on":""}" data-c="${c.id}" style="border-top-color:${c.c}"><i class="dot" style="background:${c.c}"></i><div><b>${String(k).padStart(2,"0")}</b><br><span>${c.n}</span><br><span class="zh0">${CZ[c.id]}</span></div></div>`}).join("");
   document.querySelectorAll(".box[data-c]").forEach(b=>b.onclick=()=>{filter=filter===b.dataset.c?null:b.dataset.c;render()});
   const q=$("q").value.toLowerCase();
   const rows=S.items.filter(i=>(!filter||i.c===filter)&&(!q||[i.v,i.t,i.s,i.co,i.o,i.e].join(" ").toLowerCase().includes(q)));
   $("tb").innerHTML=rows.length?rows.map(i=>`<tr class="${exp.has(i.id)?"open":""}">
-    <td class="v">${esc(i.v)}</td><td class="t" title="${esc(i.t)}">${esc(i.t)}</td>
-    <td class="s"><div class="sit"><i class="dot" style="background:${cat(i.c).c}"></i><span title="${esc(sit(i))}">${esc(sit(i))}</span></div></td>
-    <td><div class="ob">${esc(i.o)}</div>${i.e?`<div class="ex">${esc(i.e)}</div>`:""}</td>
+    <td class="v">${esc(i.v)}</td><td class="t" title="${esc(i.t)}">${esc(i.t)}${tz(i)?`<div class="zh z0">${esc(tz(i))}</div>`:""}</td>
+    <td class="s"><div class="sit"><i class="dot" style="background:${cat(i.c).c}"></i><span title="${esc(sit(i))}">${esc(sit(i))}</span></div>${zh(i)?`<div class="zh">${esc(zh(i))}</div>`:""}</td>
+    <td><div class="ob">${esc(i.o)}</div>${oz(i)?`<div class="zh z0">${esc(oz(i))}</div>`:""}${i.e?`<div class="ex">${esc(i.e)}</div>`:""}</td>
     <td>${prev(i.p)}</td>
-    <td class="act"><button data-x="${i.id}">${exp.has(i.id)?"Ver menos":"Ver mais"}</button> <button data-e="${i.id}">Editar</button> <button data-d="${i.id}">✕</button></td></tr>`).join(""):`<tr><td colspan="6" class="empty">Nenhum sinistro encontrado.</td></tr>`;
+    <td class="act"><button data-x="${i.id}">${exp.has(i.id)?"Ver menos":"Ver mais"}</button> <button data-e="${i.id}">Editar</button> <button data-d="${i.id}">✕</button></td></tr>`).join(""):`<tr><td colspan="6" class="empty">${S.items.length?"Nenhum sinistro encontrado.":"Nenhum sinistro cadastrado. Clique em “+ Novo sinistro”."}</td></tr>`;
   document.querySelectorAll("[data-x]").forEach(b=>b.onclick=()=>{const k=+b.dataset.x;exp.has(k)?exp.delete(k):exp.add(k);render()});
   document.querySelectorAll("[data-e]").forEach(b=>b.onclick=()=>open(+b.dataset.e));
   document.querySelectorAll("[data-d]").forEach(b=>b.onclick=()=>{if(confirm("Excluir este sinistro?")){S.items=S.items.filter(i=>i.id!==+b.dataset.d);save();render()}});
@@ -172,13 +178,14 @@ function render(){setTimeout(labelAll,0);
 function labelAll(){$("all").textContent=exp.size>=S.items.length?"Recolher tudo":"Expandir tudo"}
 function open(id){
   editId=id;const i=S.items.find(x=>x.id===id)||{v:"",t:"",c:"terc",s:"",o:"",e:""};
-  $("f_v").value=i.v;$("f_t").value=i.t;$("f_c").value=i.c;$("f_co").value=i.co||"";tgl();$("f_s").value=i.s;$("f_o").value=i.o;$("f_e").value=i.e;$("f_p").value=i.p||"";
+  $("f_v").value=i.v;$("f_t").value=i.t;$("f_c").value=i.c;$("f_co").value=i.co||"";tgl();$("f_s").value=i.s;$("f_z").value=i.z||"";$("f_tz").value=i.tz||"";$("f_oz").value=i.oz||"";$("f_o").value=i.o;$("f_e").value=i.e;$("f_p").value=i.p||"";
   $("dlg").showModal();
 }
 $("add").onclick=()=>open(null);
+$("tr").onclick=()=>window.open("https://translate.google.com/?sl=pt&tl=zh-CN&op=translate&text="+encodeURIComponent($("f_o").value),"_blank","noopener");
 $("cx").onclick=()=>$("dlg").close();
 $("ok").onclick=()=>{
-  const d={v:$("f_v").value.trim().toUpperCase(),t:$("f_t").value.trim(),c:$("f_c").value,s:$("f_s").value.trim(),o:$("f_o").value.trim(),e:$("f_e").value.trim(),p:$("f_p").value,co:$("f_c").value==="out"?$("f_co").value.trim():""};
+  const d={v:$("f_v").value.trim().toUpperCase(),t:$("f_t").value.trim(),c:$("f_c").value,s:$("f_s").value.trim(),o:$("f_o").value.trim(),e:$("f_e").value.trim(),p:$("f_p").value,z:$("f_z").value.trim(),tz:$("f_tz").value.trim(),oz:$("f_oz").value.trim(),co:$("f_c").value==="out"?$("f_co").value.trim():""};
   if(!d.v){$("f_v").focus();return}
   if(d.c==="out"&&!d.co){$("f_co").focus();return}
   if(editId){Object.assign(S.items.find(x=>x.id===editId),d)}
@@ -191,6 +198,40 @@ $("print").onclick=()=>{
   const t=document.title;document.title="Andamento de Sinistros - "+fmt(S.date).replace(/\//g,"-");
   window.onafterprint=()=>{document.title=t};window.print();
 };
+const tried=new Set();let busy=false;
+const HAN=/[\u4e00-\u9fff]/;
+async function viaMM(q){
+  const r=await fetch("https://api.mymemory.translated.net/get?q="+encodeURIComponent(q)+"&langpair=pt|zh-CN");
+  const j=await r.json(),t=j&&j.responseData&&j.responseData.translatedText;
+  if(!t||j.responseStatus!=200||/MYMEMORY WARNING/i.test(t)||!HAN.test(t))throw new Error("sem tradução");
+  return t;
+}
+async function viaG(q){
+  const r=await fetch("https://translate.googleapis.com/translate_a/single?client=gtx&sl=pt&tl=zh-CN&dt=t&q="+encodeURIComponent(q));
+  const j=await r.json(),t=j[0].map(x=>x[0]).join("");
+  if(!HAN.test(t))throw new Error("sem tradução");
+  return t;
+}
+async function mm(text){
+  const parts=[];let cur="";
+  for(const sn of text.split(/(?<=[.!?])\s+/)){if(cur&&(cur+" "+sn).length>450){parts.push(cur);cur=sn}else cur=cur?cur+" "+sn:sn}
+  if(cur)parts.push(cur);
+  const out=[];
+  for(const q of parts){let t;try{t=await viaMM(q.slice(0,480))}catch(e){t=await viaG(q)}out.push(t)}
+  return out.join(" ");
+}
+async function autoTr(){
+  if(busy)return;busy=true;
+  for(const i of S.items){
+    for(const [src,man,dic,zs,za] of [["t","tz",1,"tzs","tza"],["o","oz",0,"ozs","oza"]]){
+      const txt=(i[src]||"").trim();
+      if(!txt||i[man]||i[zs]===i[src]||(dic&&tz({...i,tzs:null,tza:""})))continue;
+      const k=i.id+"|"+src+"|"+txt;if(tried.has(k))continue;tried.add(k);
+      try{const z=await mm(txt);i[zs]=i[src];i[za]=z;$("trn").textContent="";save();render()}catch(e){if(e instanceof TypeError)$("trn").textContent="Tradução automática indisponível neste endereço"}
+    }
+  }
+  busy=false;
+}
 render();labelAll();
 </script>
 </body>
